@@ -41,7 +41,13 @@ const tasks = [
         completed: true,
         body: 'make something3',
         title: 'header for our task3'
-    }
+    },
+    // {
+    //     _id: 'egtrzhzfwe5333',
+    //     completed: true,
+    //     body: 'make something3',
+    //     title: 'header for our task4'
+    // },
 
 ];
 
@@ -52,7 +58,18 @@ const tasks = [
         return acc
     }, {})
 
+    // dom elements
+
+    const tasksCards = document.querySelector('.tasks-cards')
+    // console.log(tasksCards);
+    
+    const form = document.forms['add-task'];
+    const inputTitle =form.elements['title']
+    const inputBody =form.elements['body']
+
     renderAllTasks (odjOfTasks)
+
+    form.addEventListener('submit', onFormSubmitHandler)
 
     function renderAllTasks(taskList){
         
@@ -65,31 +82,80 @@ const tasks = [
         const fragment = document.createDocumentFragment();
         Object.values(taskList).forEach(task => {
             const taskCard = listItemTemplate(task) 
+            console.log(taskCard);
+            
+            fragment.appendChild(taskCard)
+            console.log(fragment);
+            
         })
+        tasksCards.appendChild(fragment)
+
     }
     
-    function listItemTemplate() {
+    function listItemTemplate({_id, title, body} = {}) {
+        // console.log(_id, title, body);
+        
         const col = document.createElement('div');
         col.classList.add('col-lg-4');
-
+        
         const card = document.createElement('div');
         card.classList.add('card', 'text-light', 'bg-dark', 'm-3', 'p-3');
-
-        const cardHeader = document.createElement('div');
-        cardHeader.classList.add('card-header');
       
         const cardBody = document.createElement('div');
         cardBody.classList.add('card-body');
         
         const cardTitle = document.createElement('h5');
         cardTitle.classList.add('card-title');
+        cardTitle.textContent = title;
 
         const cardText = document.createElement('p');
         cardText.classList.add('card-text');
+        cardText.textContent = body;
 
         const deleteBtn = document.createElement('button');
         deleteBtn.classList.add('btn', 'btn-info', 'delete-btn');
+        deleteBtn.textContent = 'Remove'
+    
+        cardBody.appendChild(cardTitle)
+        cardBody.appendChild(cardText)
+        
+        card.appendChild(cardBody)
+        card.appendChild(deleteBtn)
+        col.appendChild(card)
+
+        return col
     }
+
+    function onFormSubmitHandler(e) {
+       e.preventDefault() 
+       const titleValue = inputTitle.value;
+       const inputBodyValue = inputBody.value;
+       if (!titleValue || !inputBodyValue){
+        alert('you haven´t filled the task or the description')
+        return
+       }
+
+       const task = createTask(titleValue, inputBodyValue)
+       const taskItem = listItemTemplate(task)
+    //    tasksCards.appendChild(taskItem)
+        tasksCards.insertAdjacentElement('afterbegin', taskItem)
+        form.reset()
+        // inputTitle.value = '';
+        // inputBody.value = ''
+    }
+
+    function createTask(title, body){
+        const newTask = {
+            title,
+            body,
+            completed: false,
+            _id: `task-${Math.random()}`
+        };
+        console.log(newTask);
+        odjOfTasks[newTask._id] = newTask
+        return {...newTask}
+    }
+
 
 }(tasks));
 
