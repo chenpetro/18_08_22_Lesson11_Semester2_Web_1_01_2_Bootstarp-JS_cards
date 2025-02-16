@@ -155,7 +155,5 @@ const tasks = [
         odjOfTasks[newTask._id] = newTask
         return {...newTask}
     }
-
-
 }(tasks));
 
